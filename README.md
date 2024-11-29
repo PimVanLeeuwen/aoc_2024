@@ -1,2 +1,2 @@
-# AOC 2021
-AOC 2021 in C++ for practice. 
+# AOC 2024
+AOC 2024 in C++ for practice. 
