@@ -21,8 +21,7 @@ bool can_make(const long test_value, deque<long> input) {
 bool can_make_2(const long test_value, deque<long> input) {
     if (input.size() == 1) { return input[0] == test_value; }
 
-    long num = input.front(); input.pop_front();
-
+    const long num = input.front(); input.pop_front();
     deque<long> deque_mul = input; deque_mul[0] *= num;
     deque<long> deque_add = input; deque_add[0] += num;
     deque<long> deque_concat = input; string num_string = to_string(num); num_string += to_string(deque_concat[0]); deque_concat[0] = stol(num_string);
