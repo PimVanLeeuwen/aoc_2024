@@ -2,23 +2,51 @@
 
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <ostream>
 #include <sstream>
 
 using namespace std;
 
-void Day11::execute(const vector<string> &lines) {
-    for (const auto &line: lines) {
-        // convert into a string stream to split on token
-        stringstream ss(line);
-        string token;
+map<long, long> move(const map<long, long> stones) {
+    map<long, long> output;
 
-        // put the points in here
-        vector<string> points;
-
-        // separate line
-        while (getline(ss, token, ',')) { points.push_back(token); }
+    for (const auto [stone, amount] : stones) {
+        if (stone == 0) {
+            output[1] += amount;
+        } else if (to_string(stone).size() % 2 == 0) {
+            output[stoi(to_string(stone).substr(0, to_string(stone).size() / 2))] += amount;
+            output[stoi(to_string(stone).substr(to_string(stone).size() / 2, to_string(stone).size() / 2))] += amount;
+        } else {
+            output[stone*2024] += amount;
+        }
     }
 
-    cout << "TODO IMPLEMENT" << endl;
+    return output;
+}
+
+void Day11::execute(const vector<string> &lines) {
+
+    constexpr int MOVES = 25;
+    constexpr int MOVES_2 = 50;
+
+    map<long, long> stones;
+
+    stringstream ss(lines[0]);
+    string token;
+
+    // separate line
+    while (getline(ss, token, ' ')) stones[stoi(token)] = 1;
+
+    for (int i = 0; i < MOVES; i++) stones = move(stones);
+
+    long part_1 = 0;
+    for (const auto [stone, amount] : stones) part_1 += amount;
+    cout << "Part 1: " << part_1 << endl;
+
+    for (int i = 0; i < MOVES_2; i++) stones = move(stones);
+    
+    long part_2 = 0;
+    for (const auto [stone, amount] : stones) part_2 += amount;
+    cout << "Part 2: " << part_2 << endl;
 }
