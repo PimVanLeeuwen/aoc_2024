@@ -1,14 +1,10 @@
 #include "Day16.h"
 
-#include <climits>
-#include <cmath>
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <math.h>
-#include <numeric>
 #include <ostream>
-#include <stdexcept>
 #include <queue>
 #include <set>
 

@@ -58,40 +58,34 @@ void Day13::execute(const vector<string> &lines) {
     }
 
     for (const auto &[A_x, A_y, B_x, B_y, x, y]: problems) {
-
+        // Solve each problem using z3 satisfiability solving
+        // define the context and all the variables
         z3::context c;
+        z3::expr A_x_e = c.int_const("A_x"), B_x_e = c.int_const("B_x");
+        z3::expr A_y_e = c.int_const("A_Y"), B_y_e = c.int_const("B_y");
+        z3::expr V_a_e = c.int_const("V_a"), V_b_e = c.int_const("V_b");
+        z3::expr y_e = c.int_const("y"), x_e = c.int_const("x");
+        z3::expr tokens = c.int_const("tokens");
 
-        z3::expr A_x_e = c.int_const("A_x");
-        z3::expr B_x_e = c.int_const("B_x");
-        z3::expr A_y_e = c.int_const("A_Y");
-        z3::expr B_y_e = c.int_const("B_y");
-        z3::expr V_a_e = c.int_const("V_a");
-        z3::expr V_b_e = c.int_const("V_b");
-        z3::expr score = c.int_const("score");
-        z3::expr y_e = c.int_const("y");
-        z3::expr x_e = c.int_const("x");
-
+        // use an optimization objective
         z3::optimize s(c);
 
-        // assigning variables
-        s.add(A_x_e == A_x && B_x_e == B_x);
-        s.add(A_y_e == A_y && B_y_e == B_y);
+        // assigning variables and adding the constraints
+        s.add(A_x_e == A_x && B_x_e == B_x && A_y_e == A_y && B_y_e == B_y);
         s.add(y_e == y && x_e == x);
+        s.add(A_x_e*V_a_e + B_x_e*V_b_e == x_e && A_y_e*V_a_e + B_y_e*V_b_e == y_e);
+        s.add(tokens == V_a_e * 3 + V_b_e);
 
-        s.add(A_x_e*V_a_e + B_x_e*V_b_e == x_e);
-        s.add(A_y_e*V_a_e + B_y_e*V_b_e == y_e);
+        // we want to minimize the amount of tokens that we need
+        s.minimize(tokens);
 
-        s.add(score == V_a_e * 3 + V_b_e);
-
-        s.minimize(score);
-
+        // get the amount of tokens, if possible
         if (s.check() == z3::sat) {
             const z3::model m = s.get_model();
-
-            part_1 += m.eval(score).get_numeral_int();
+            part_1 += m.eval(tokens).get_numeral_int();
         }
     }
 
     cout << "Part 1: " << part_1 << endl;
-    cout << "Part 2: Switched to Python because Z3 in C++ does not work for longs" << endl;
+    cout << "Part 2: Switched to Python because Z3 in C++ does not work for longs, the exact same setup was used as here" << endl;
 }
