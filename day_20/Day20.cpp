@@ -88,7 +88,7 @@ void Day20::execute(const vector<string> &lines) {
     for (int i = 0; i < path.size(); i++) {
         for (int j = i + 101; j < path.size(); j++) {
             const int dist = abs(path[i].first - path[j].first) + abs(path[i].second - path[j].second);
-            if (dist <= 2) part_1++;
+            if (dist <= 2 && (j-i-dist) >= 100) part_1++;
             if (dist <= 20 && (j-i-dist) >= 100) part_2++; // make sure the cheat is one step
         }
     }
