@@ -8,11 +8,6 @@
 
 using namespace std;
 
-struct Problem {
-    int x;
-    int y;
-};
-
 long do_wires(map<string, bool> wires, set<pair<pair<string, string>, pair<string, string>>> mapping) {
     long output = 0;
 
@@ -46,9 +41,9 @@ long do_wires(map<string, bool> wires, set<pair<pair<string, string>, pair<strin
 
 string to_binary(long n) {
     string r;
-    while(n!=0) {
-        r = (n%2==0 ?"0":"1")+r;
-        n/=2;
+    while(n != 0) {
+        r = (n % 2 == 0 ? "0" : "1" ) + r;
+        n /= 2;
     }
     return r;
 }
@@ -57,8 +52,8 @@ map<string, bool> gen_wires() {
     map<string, bool> wires;
 
     for (int i = 0; i < 45; i++) {
-        int x = rand() % 2;
-        int y = rand() % 2;
+        const int x = rand() % 2;
+        const int y = rand() % 2;
         if (i < 10) {
             wires["x0" + to_string(i)] = x;
             wires["y0" + to_string(i)] = y;
@@ -94,16 +89,29 @@ set<string> test_output(const map<string, bool>& wires, const long z) {
     string z_actual = to_binary(x+y);
     reverse(z_actual.begin(), z_actual.end());
 
-    cout << z_expected << endl;
-    cout << z_actual << endl;
-
     set<string> output;
 
     for (int i = 0; i < z_expected.size(); i++) {
-        if (z_expected[i] != z_actual[i]) output.insert("z" + to_string(i));
+        if (z_expected[i] != z_actual[i] && i > 9) output.insert("z" + to_string(i));
+        else if (z_expected[i] != z_actual[i]) output.insert("z0" + to_string(i));
     }
 
     return output;
+}
+
+set<pair<pair<string, string>, pair<string, string>>> swap(set<pair<pair<string, string>, pair<string, string>>> &mapping, const string& p1, const string &p2) {
+    bool swap_1 = false, swap_2 = false;
+
+    set<pair<pair<string, string>, pair<string, string>>> new_mapping;
+    for (const auto &[fst, snd] : mapping) {
+        if (snd.second == p1) {new_mapping.insert({fst, {snd.first, p2}}); swap_1 = true;}
+        else if (snd.second == p2) {new_mapping.insert({fst, {snd.first, p1}}); swap_2 = true;}
+        else new_mapping.insert({fst, snd});
+    }
+
+    if (!swap_1 || !swap_2) { cout << "error";}
+
+    return new_mapping;
 }
 
 void Day24::execute(const vector<string> &lines) {
@@ -136,20 +144,23 @@ void Day24::execute(const vector<string> &lines) {
 
     part_1 = do_wires(wires, mapping);
 
-    set<string> faulty = test_output(wires, part_1);
+    // These are with some blood, sweat and tears by checking if there are still faulty bits
+    mapping = swap(mapping, "z06", "fkp");
+    mapping = swap(mapping, "ngr", "z11");
+    mapping = swap(mapping, "mfm", "z31");
+    mapping = swap(mapping, "bpt", "krj");
+
+    set<string> faulty = {};
 
     for (int i = 0; i < 1000; i++) {
         map<string, bool> test_wires_1 = gen_wires();
         long part_2_test_1 = do_wires(test_wires_1, mapping);
         set<string> faulty_new = test_output(test_wires_1, part_2_test_1);
-        for (string s : faulty_new) faulty.insert(s);
+        for (const string& s : faulty_new) faulty.insert(s);
     }
 
-    for (string s : faulty) cout << s << endl;
-
-
-
+    for (const string& s : faulty) cout << s << endl;
 
     cout << "Part 1: " << part_1 << endl;
-    cout << "Part 2: " << part_2 << endl;
+    cout << "Part 2: " << "See code" << endl;
 }
